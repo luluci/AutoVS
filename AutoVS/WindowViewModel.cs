@@ -27,6 +27,7 @@ namespace AutoVS
             // GUI設定
             VsDteConnectState = "接続";
             OpeStatus = "ツール起動しました";
+            SlnFilePath = Config.PrevSlnFilePath;
         }
 
         private void UpdateConfig()
@@ -110,6 +111,33 @@ namespace AutoVS
             }
         }
 
+        public string VsSlnName
+        {
+            get { return dtevs.VsSlnName; }
+        }
+
+        public ObservableCollection<VSSlnInfo> VsSlnInfo
+        {
+            get { return dtevs.VsSlnInfo; }
+        }
+        private int selectIndexVsSlnInfo = 0;
+        public int SelectIndexVsSlnInfo
+        {
+            get { return selectIndexVsSlnInfo; }
+            set
+            {
+                selectIndexVsSlnInfo = value;
+                dtevs.SelectIndexVsSlnInfo = value;
+                NotifyPropertyChanged(nameof(SelectIndexVsSlnInfo));
+            }
+        }
+
+        public void UpdateVsSlnInfo()
+        {
+            NotifyPropertyChanged(nameof(VsSlnName));
+            NotifyPropertyChanged(nameof(VsSlnInfo));
+        }
+
         public async Task OnClickConnectVs()
         {
             if (SlnFilePath.Length == 0)
@@ -129,6 +157,10 @@ namespace AutoVS
             });
             if (result)
             {
+                // ソリューション情報ロード
+                dtevs.LoadSolutionInfo();
+                UpdateVsSlnInfo();
+                // GUI更新
                 OpeStatus = "VisualStudioに接続しました。";
                 VsDteConnectState = "切断";
             }
@@ -154,6 +186,7 @@ namespace AutoVS
         public void OnDropSlnFilePath(string[] filenames)
         {
             SlnFilePath = filenames[0];
+            Config.PrevSlnFilePath = filenames[0];
         }
 
         private string vsOpeStatusBarText = "";
@@ -185,5 +218,28 @@ namespace AutoVS
                 FailedVsOpe();
             }
         }
+
+
+        private string opeItem = "";
+        public string OpeItem
+        {
+            get { return opeItem; }
+            set
+            {
+                opeItem = value;
+                NotifyPropertyChanged(nameof(OpeItem));
+            }
+        }
+
+        public void OnDropOpeItem(string[] filenames)
+        {
+            OpeItem = filenames[0];
+        }
+
+        public void OnClickOpeAdd()
+        {
+            dtevs.AddFile("");
+        }
+
     }
 }

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AutoVS"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" ResizeMode="NoResize">
+        Title="MainWindow" Height="509.115" Width="800" ResizeMode="NoResize">
     <Grid>
 
         <StackPanel Background="#FFF1F1F1" Margin="0,0,2,0">
@@ -23,14 +23,27 @@
                     <Button Content="{Binding VsDteConnectState}" IsEnabled="{Binding VsDteConnectEnable}" Click="Button_ConnectVs_Click" Margin="10,10,10,10" Width="100"/>
                 </StackPanel>
             </GroupBox>
-            <GroupBox Header="VisualStudio操作" Height="164">
+            <GroupBox Header="VisualStudio操作" Height="259">
                 <Grid>
-                    <TextBox Text="{Binding VsOpeStatusBarText}" Margin="180,38,346,76" />
-                    <Button Content="StatusBar" Click="Button_VsOpeStatusBar_Click" HorizontalAlignment="Left" Height="28" Margin="469,38,0,0" VerticalAlignment="Top" Width="111"/>
+                    <TextBox Text="{Binding VsSlnName, Mode=OneWay}" IsEnabled="False" Margin="10,10,0,0" Height="24" VerticalAlignment="Top" HorizontalAlignment="Left" Width="155"/>
+                    <TextBlock Text="内のProject一覧" Margin="170,15,514,134"/>
+                    <ListBox ItemsSource="{Binding VsSlnInfo}" SelectedIndex="{Binding SelectIndexVsSlnInfo}" Margin="10,39,0,0" Height="80" VerticalAlignment="Top" HorizontalAlignment="Left" Width="291">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <TextBlock Text="{Binding Name}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <TextBox Text="{Binding OpeItem}" DragDrop.PreviewDragOver="TextBox_OpeItem_PreviewDragOver" DragDrop.Drop="TextBox_OpeItem_Drop" Margin="10,136,134,73"/>
+                    <Button Content="Add" Click="Button_OpeAdd_Click" Margin="651,136,24,73" />
+                    <TextBox Text="{Binding VsOpeStatusBarText}" Margin="122,182,0,0" Height="28" VerticalAlignment="Top" HorizontalAlignment="Left" Width="254" />
+                    <Button Content="StatusBar" Click="Button_VsOpeStatusBar_Click" HorizontalAlignment="Left" Height="28" Margin="391,182,0,0" VerticalAlignment="Top" Width="111"/>
                 </Grid>
             </GroupBox>
         </StackPanel>
-        <StatusBar Margin="0,374,0,0">
+        <StatusBar Margin="0,439,0,0">
             <Label Content="{Binding OpeStatus}" Height="27" Width="784"/>
         </StatusBar>
     </Grid>

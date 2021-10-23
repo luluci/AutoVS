@@ -87,5 +87,34 @@ namespace AutoVS
         {
             isConfigChanged = true;
         }
+
+        private void TextBox_OpeItem_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                // ドロップしたファイル名を全部取得する。
+                string[] filenames = (string[])e.Data.GetData(DataFormats.FileDrop);
+                vm.OnDropOpeItem(filenames);
+            }
+        }
+
+        private void TextBox_OpeItem_PreviewDragOver(object sender, DragEventArgs e)
+        {
+            // マウスポインタを変更する。
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effects = DragDropEffects.All;
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+            }
+            e.Handled = true;
+        }
+
+        private void Button_OpeAdd_Click(object sender, RoutedEventArgs e)
+        {
+            vm.OnClickOpeAdd();
+        }
     }
 }

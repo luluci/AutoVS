@@ -22,6 +22,13 @@ namespace AutoVS
         public string ExePath { get; set; }
     }
 
+    class VSSlnInfo
+    {
+        public int Index { get; set; }
+        public string Name { get; set; }
+        public EnvDTE.Project Project { get; set; }
+    }
+
     class VsDte : IDisposable
     {
         private EnvDTE.DTE dte = null;
@@ -39,6 +46,8 @@ namespace AutoVS
             {
                 vsinfo.Add(info);
             }
+            // 初期化
+            vsSlnInfo = new ObservableCollection<VSSlnInfo>();
         }
 
         private ObservableCollection<VSInfo> vsinfo;
@@ -73,6 +82,49 @@ namespace AutoVS
         }
         #endregion
 
+        public string VsSlnName { get; set; } = "";
+
+        private ObservableCollection<VSSlnInfo> vsSlnInfo;
+        public ObservableCollection<VSSlnInfo> VsSlnInfo
+        {
+            get { return vsSlnInfo; }
+        }
+        public int SelectIndexVsSlnInfo { get; set; }
+
+        public bool LoadSolutionInfo()
+        {
+            if (dte == null) return false;
+
+            try
+            {
+                // ソリューション情報取得
+                VsSlnName = Path.GetFileName(dte.Solution.FileName);
+                // プロジェクト情報取得
+                vsSlnInfo.Clear();
+                int idx = 0;
+                foreach (EnvDTE.Project prj in dte.Solution.Projects)
+                {
+                    //
+                    vsSlnInfo.Add(new VSSlnInfo()
+                    {
+                        Index = idx,
+                        Name = prj.Name,
+                        Project = prj,
+                    });
+                    //
+                    idx++;
+                }
+            }
+            catch (System.Runtime.InteropServices.COMException e)
+            {
+                // なんらかの要因でDTEの接続が切れていると見なす
+                dte = null;
+                return false;
+            }
+
+            return true;
+        }
+
         public bool StatusBar(string msg)
         {
             if (dte == null) return false;
@@ -80,6 +132,24 @@ namespace AutoVS
             try
             {
                 dte.StatusBar.Text = msg;
+            }
+            catch (System.Runtime.InteropServices.COMException e)
+            {
+                // なんらかの要因でDTEの接続が切れていると見なす
+                dte = null;
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool AddFile(string path)
+        {
+            if (dte == null) return false;
+
+            try
+            {
+                vsSlnInfo[SelectIndexVsSlnInfo].Project.ProjectItems.AddFolder("test");
             }
             catch (System.Runtime.InteropServices.COMException e)
             {

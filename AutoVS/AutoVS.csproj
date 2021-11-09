@@ -172,11 +172,6 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Resource Include="test_dir1\test_dir1_1\TextFile1.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="test_dir1\test_dir1_2\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

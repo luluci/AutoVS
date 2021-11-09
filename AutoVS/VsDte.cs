@@ -233,7 +233,7 @@ namespace AutoVS
                         child.Remove();
                     }
                     // 指定フォルダ内のフォルダ/ファイルをすべて登録
-
+                    UpdateFolderImpl(tgtProjItem, tgtDir);
 
                     Console.WriteLine($"ProjName: {SelectProject.FullName}");
                     Console.WriteLine($"ProjDir : {rootDir}");
@@ -252,13 +252,13 @@ namespace AutoVS
             string[] files = System.IO.Directory.GetFiles(dir);
             foreach (var file in files)
             {
-                project.Collection.AddFromFile(file);
+                project.ProjectItems.AddFromFile(file);
             }
             // フォルダを登録
             string[] dirs = System.IO.Directory.GetDirectories(dir);
             foreach (var child in dirs)
             {
-                project.Collection.AddFromDirectory(child);
+                project.ProjectItems.AddFromDirectory(child);
             }
         }
 

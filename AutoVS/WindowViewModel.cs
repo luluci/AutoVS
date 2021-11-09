@@ -17,7 +17,7 @@ namespace AutoVS
             PropertyChanged?.Invoke(this, e);
         }
 
-
+        private string updateTgtFolder;
         private VsDte dtevs;
 
         public WindowViewModel()
@@ -28,6 +28,9 @@ namespace AutoVS
             VsDteConnectState = "接続";
             OpeStatus = "ツール起動しました";
             SlnFilePath = Config.PrevSlnFilePath;
+
+            //
+            updateTgtFolder = "test_dir1";
         }
 
         private void UpdateConfig()
@@ -83,6 +86,7 @@ namespace AutoVS
             get { return selectIndexVsInfo; }
             set
             {
+                //
                 selectIndexVsInfo = value;
                 dtevs.SelectIndexVsInfo = value;
                 NotifyPropertyChanged(nameof(SelectIndexVsInfo));
@@ -116,7 +120,7 @@ namespace AutoVS
             get { return dtevs.VsSlnName; }
         }
 
-        public ObservableCollection<VSSlnInfo> VsSlnInfo
+        public ObservableCollection<VSProjectInfo> VsSlnInfo
         {
             get { return dtevs.VsSlnInfo; }
         }
@@ -129,6 +133,17 @@ namespace AutoVS
                 selectIndexVsSlnInfo = value;
                 dtevs.SelectIndexVsSlnInfo = value;
                 NotifyPropertyChanged(nameof(SelectIndexVsSlnInfo));
+
+                //dtevs.GetDir();
+                // 選択したプロジェクトの情報をチェック
+                if (dtevs.HasFolderInSelectProject(updateTgtFolder))
+                {
+                    IsEnableUpdateFolder = true;
+                }
+                else
+                {
+                    IsEnableUpdateFolder = false;
+                }
             }
         }
 
@@ -136,6 +151,7 @@ namespace AutoVS
         {
             NotifyPropertyChanged(nameof(VsSlnName));
             NotifyPropertyChanged(nameof(VsSlnInfo));
+            SelectIndexVsSlnInfo = 0;
         }
 
         public async Task OnClickConnectVs()
@@ -241,5 +257,29 @@ namespace AutoVS
             dtevs.AddFile("");
         }
 
+
+        private bool isEnableUpdateFolder = false;
+        public bool IsEnableUpdateFolder
+        {
+            get
+            {
+                return isEnableUpdateFolder;
+            }
+            set
+            {
+                isEnableUpdateFolder = value;
+                NotifyPropertyChanged(nameof(IsEnableUpdateFolder));
+            }
+        }
+
+        public async Task OnClickUpdateFolder()
+        {
+            IsEnableUpdateFolder = false;
+            await Task.Run(() =>
+            {
+                dtevs.UpdateFolder(updateTgtFolder);
+            });
+            IsEnableUpdateFolder = true;
+        }
     }
 }

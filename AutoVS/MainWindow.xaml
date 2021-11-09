@@ -36,6 +36,7 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
+                    <Button Content="UPDATE test_dir1" IsEnabled="{Binding IsEnableUpdateFolder}" Click="Button_UpdateFolder_Click" Margin="316,39,351,170" />
                     <TextBox Text="{Binding OpeItem}" DragDrop.PreviewDragOver="TextBox_OpeItem_PreviewDragOver" DragDrop.Drop="TextBox_OpeItem_Drop" Margin="10,136,134,73"/>
                     <Button Content="Add" Click="Button_OpeAdd_Click" Margin="651,136,24,73" />
                     <TextBox Text="{Binding VsOpeStatusBarText}" Margin="122,182,0,0" Height="28" VerticalAlignment="Top" HorizontalAlignment="Left" Width="254" />

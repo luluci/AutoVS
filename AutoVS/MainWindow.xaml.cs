@@ -116,5 +116,10 @@ namespace AutoVS
         {
             vm.OnClickOpeAdd();
         }
+
+        private async void Button_UpdateFolder_Click(object sender, RoutedEventArgs e)
+        {
+            await vm.OnClickUpdateFolder();
+        }
     }
 }

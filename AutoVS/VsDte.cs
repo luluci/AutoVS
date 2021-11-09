@@ -22,7 +22,7 @@ namespace AutoVS
         public string ExePath { get; set; }
     }
 
-    class VSSlnInfo
+    class VSProjectInfo
     {
         public int Index { get; set; }
         public string Name { get; set; }
@@ -47,7 +47,7 @@ namespace AutoVS
                 vsinfo.Add(info);
             }
             // 初期化
-            vsSlnInfo = new ObservableCollection<VSSlnInfo>();
+            vsProjects = new ObservableCollection<VSProjectInfo>();
         }
 
         private ObservableCollection<VSInfo> vsinfo;
@@ -84,12 +84,35 @@ namespace AutoVS
 
         public string VsSlnName { get; set; } = "";
 
-        private ObservableCollection<VSSlnInfo> vsSlnInfo;
-        public ObservableCollection<VSSlnInfo> VsSlnInfo
+        private ObservableCollection<VSProjectInfo> vsProjects;
+        public ObservableCollection<VSProjectInfo> VsSlnInfo
         {
-            get { return vsSlnInfo; }
+            get { return vsProjects; }
         }
-        public int SelectIndexVsSlnInfo { get; set; }
+
+        private int selectIndexVsSlnInfo = -1;
+        public int SelectIndexVsSlnInfo {
+            get
+            {
+                return selectIndexVsSlnInfo;
+            }
+            set
+            {
+                selectIndexVsSlnInfo = value;
+
+                if (selectIndexVsSlnInfo != -1)
+                {
+                    SelectProject = vsProjects[selectIndexVsSlnInfo].Project;
+                }
+                else
+                {
+                    SelectProject = null;
+                }
+            }
+        }
+
+        public EnvDTE.Project SelectProject { get; set; } = null;
+
 
         public bool LoadSolutionInfo()
         {
@@ -100,12 +123,12 @@ namespace AutoVS
                 // ソリューション情報取得
                 VsSlnName = Path.GetFileName(dte.Solution.FileName);
                 // プロジェクト情報取得
-                vsSlnInfo.Clear();
+                vsProjects.Clear();
                 int idx = 0;
                 foreach (EnvDTE.Project prj in dte.Solution.Projects)
                 {
                     //
-                    vsSlnInfo.Add(new VSSlnInfo()
+                    vsProjects.Add(new VSProjectInfo()
                     {
                         Index = idx,
                         Name = prj.Name,
@@ -149,7 +172,7 @@ namespace AutoVS
 
             try
             {
-                vsSlnInfo[SelectIndexVsSlnInfo].Project.ProjectItems.AddFolder("test");
+                vsProjects[SelectIndexVsSlnInfo].Project.ProjectItems.AddFolder("test");
             }
             catch (System.Runtime.InteropServices.COMException e)
             {
@@ -160,6 +183,62 @@ namespace AutoVS
 
             return true;
         }
+
+        public bool HasFolderInSelectProject(string name)
+        {
+            try
+            {
+                var _ = SelectProject.ProjectItems.Item(name);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public void GetDir()
+        {
+            if (0 <= SelectIndexVsInfo && SelectIndexVsInfo < vsProjects.Count)
+            {
+                try
+                {
+                    var item = vsProjects[SelectIndexVsSlnInfo].Project.ProjectItems.Item("test_dir1");
+                    Console.WriteLine($"{item.Name}");
+                    foreach (EnvDTE.ProjectItem child in item.ProjectItems)
+                    {
+                        Console.WriteLine($"+-{child.Name}");
+                    }
+                }
+                catch
+                {
+                    Console.WriteLine($"Not found.");
+                }
+            }
+        }
+
+        public void UpdateFolder(string name)
+        {
+            if (SelectProject != null)
+            {
+                try
+                {
+                    var rootDir = System.IO.Path.GetDirectoryName(SelectProject.FullName);
+                    var tgtDir = $@"{rootDir}\{name}";
+                    var tgtProjItem = SelectProject.ProjectItems.Item(name);
+
+                    Console.WriteLine($"ProjName: {SelectProject.FullName}");
+                    Console.WriteLine($"ProjDir : {rootDir}");
+                    Console.WriteLine($"TgtDir  : {tgtDir}");
+                }
+                catch
+                {
+
+                }
+            }
+        }
+
+
 
         public bool Connect(string slnpath)
         {
@@ -212,7 +291,8 @@ namespace AutoVS
             IEnumerable<string> runningObjectDisplayNames = null;
             GetRunningObject("dummy", out runningObjectDisplayNames);
             // 指定されたプロセスを検索
-            var re = new Regex($@"{vsinfo[SelectIndexVsInfo].DteDisplayName}\.DTE");
+            var reText = Regex.Escape(vsinfo[SelectIndexVsInfo].DteDisplayName);
+            var re = new Regex(reText);
             foreach (var obj in runningObjectDisplayNames)
             {
                 if (re.IsMatch(obj))

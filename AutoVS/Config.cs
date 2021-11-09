@@ -89,7 +89,7 @@ namespace AutoVS
                         new VSInfo()
                         {
                             Name = "Visual Studio 2017 Express",
-                            DteDisplayName = "WDExpress",
+                            DteDisplayName = "WDExpress.DTE",
                             ExePath = @"C:\Program Files (x86)\Microsoft Visual Studio\2017\WDExpress\Common7\IDE\wdexpress.exe",
                         }
                     },

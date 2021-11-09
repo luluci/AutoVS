@@ -223,9 +223,17 @@ namespace AutoVS
             {
                 try
                 {
+                    // 操作対象要素作成
                     var rootDir = System.IO.Path.GetDirectoryName(SelectProject.FullName);
                     var tgtDir = $@"{rootDir}\{name}";
                     var tgtProjItem = SelectProject.ProjectItems.Item(name);
+                    // ProjectFolder内の登録情報を一旦クリア
+                    foreach (EnvDTE.ProjectItem child in tgtProjItem.ProjectItems)
+                    {
+                        child.Remove();
+                    }
+                    // 指定フォルダ内のフォルダ/ファイルをすべて登録
+
 
                     Console.WriteLine($"ProjName: {SelectProject.FullName}");
                     Console.WriteLine($"ProjDir : {rootDir}");
@@ -235,6 +243,22 @@ namespace AutoVS
                 {
 
                 }
+            }
+        }
+
+        private void UpdateFolderImpl(EnvDTE.ProjectItem project, string dir)
+        {
+            // ファイルを登録
+            string[] files = System.IO.Directory.GetFiles(dir);
+            foreach (var file in files)
+            {
+                project.Collection.AddFromFile(file);
+            }
+            // フォルダを登録
+            string[] dirs = System.IO.Directory.GetDirectories(dir);
+            foreach (var child in dirs)
+            {
+                project.Collection.AddFromDirectory(child);
             }
         }
 
